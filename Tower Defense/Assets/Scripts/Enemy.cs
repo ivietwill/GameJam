@@ -2,38 +2,52 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Enemy : MonoBehaviour
 {
-    public float speed = 10f;
+    public float startSpeed = 10f;
 
-    private Transform target;
-    private int wavepointIndex = 0;
+    [HideInInspector]
+    public float speed;
+
+    public float health = 100;
+
+    public int worth = 45;
+
+    public GameObject deathEffect;
+
+    public Transform rotatingGobs;
 
     void Start()
     {
-        target = WayPoint.points[0];
+        speed = startSpeed;
     }
 
-    void Update ()
+
+      void Die()
     {
-        Vector3 dir = target.position - transform.position;
-        transform.Translate(dir.normalized * speed * Time.deltaTime, Space.World);
+        PlayerStats.Money += worth;
 
-        if(Vector3.Distance(transform.position, target.position) <= 0.4f)
-        {
-            GetNextWayPoint();
-        }
-
+        GameObject effect = (GameObject)Instantiate(deathEffect, transform.position, Quaternion.identity);
+        Destroy(effect, 5f);
+        
+        Destroy(gameObject);
     }
 
-    void GetNextWayPoint()
+    
+    public void TakeDamage (float amount)
     {
-        if (wavepointIndex >= WayPoint.points.Length - 1)
+        health -= amount;
+
+        if (health <= 0)
         {
-            Destroy(gameObject);
-            return;
+            Die();
         }
-        wavepointIndex++;
-        target = WayPoint.points[wavepointIndex];
     }
+
+    public void Slow (float pct)
+    {
+        speed = startSpeed * (1f - pct);
+    }
+
 }
