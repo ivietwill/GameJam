@@ -1,13 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BuildManager : MonoBehaviour
 {
     public static BuildManager instance; 
-    private GameObject turretToBuild;
+    private TurretBlueprint turretToBuild;
 
-    public GameObject standardTurretPrefab;
+    private Nodes selectedNode;
+
+    public GameObject buildEffect;
+    public NodeUI nodeUI;
+
+    
 
     void Awake ()
     {
@@ -19,15 +25,53 @@ public class BuildManager : MonoBehaviour
         instance = this;
     }
 
-    void Start ()
+  
+    // public GameObject GetTurretToBuild ()
+    // {
+    //     return turretToBuild;
+    // }
+
+    public bool CanBuild {get {return turretToBuild != null;}}
+    public bool HasMoney {get {return PlayerStats.Money >= turretToBuild.cost; }}
+
+
+    public void SelectNode (Nodes node)
     {
-        turretToBuild = standardTurretPrefab;
+        if (selectedNode == node)
+        {
+            DeselectNode();
+            return;
+        }
+        selectedNode = node;
+        turretToBuild = null;
+
+        nodeUI.SetTarget(node);
     }
 
-    public GameObject GetTurretToBuild ()
+        public void DeselectNode()
     {
-        return turretToBuild;
+        selectedNode = null;
+        nodeUI.Hide();
     }
+
+
+    public  void SelectTurretToBuild (TurretBlueprint turret)
+    {
+
+        turretToBuild = turret;
+        DeselectNode();
+    }
+
+
+    public TurretBlueprint GetTurretToBuild ()
+    {
+        {
+            return turretToBuild;
+        }
+    }
+
+
+
 
    
  
